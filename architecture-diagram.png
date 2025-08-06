@@ -16,3 +16,23 @@
                 +-----------+ 
                 | Logic App | (Scheduler, optional)
                 +-----------+
+
+#Flow:
+
+#1 Normal read/write:
+
+If data is < 3 months old: Cosmos DB operations as usual.
+
+#2 API-layer read interception (old data):
+
+If older record requested:
+
+Attempt Cosmos DB read. If not found, look up Blob Storage.
+
+If found in Blob, stream record back—transparently.
+
+#3 Archival automation:
+
+Azure Data Factory, Logic App, or Timer-triggered Azure Function regularly identifies + moves eligible records to Blob (JSON with metadata).
+
+On successful archival, original Cosmos DB record is marked archived/deleted.
